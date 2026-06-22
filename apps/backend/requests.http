@@ -1,0 +1,58 @@
+### Biblioteca API — pruebas manuales (REST Client / Insomnia / Postman)
+@host = http://localhost:3000
+
+### Health
+GET {{host}}/health
+
+### Login del bibliotecario seed (admin@biblioteca.test / admin12345)
+# @name loginAdmin
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{ "email": "admin@biblioteca.test", "password": "admin12345" }
+
+### Guardá el token de la respuesta anterior
+@tokenAdmin = {{loginAdmin.response.body.token}}
+
+### Crear un libro (requiere bibliotecario)
+# @name crearLibro
+POST {{host}}/libros
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{ "titulo": "Dune", "autor": "Frank Herbert", "isbn": "9780441013593", "copiasTotales": 3 }
+
+@libroId = {{crearLibro.response.body.id}}
+
+### Listar catálogo
+GET {{host}}/libros
+Authorization: Bearer {{tokenAdmin}}
+
+### Registrar un socio
+POST {{host}}/auth/register
+Content-Type: application/json
+
+{ "nombre": "Ana Gómez", "email": "ana@biblioteca.test", "password": "ana1234567" }
+
+### Login del socio
+# @name loginSocio
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{ "email": "ana@biblioteca.test", "password": "ana1234567" }
+
+@tokenSocio = {{loginSocio.response.body.token}}
+
+### Prestar un libro (como socio)
+# @name prestar
+POST {{host}}/prestamos
+Authorization: Bearer {{tokenSocio}}
+Content-Type: application/json
+
+{ "libroId": "{{libroId}}" }
+
+@prestamoId = {{prestar.response.body.id}}
+
+### Devolver el libro
+POST {{host}}/prestamos/{{prestamoId}}/devolucion
+Authorization: Bearer {{tokenSocio}}

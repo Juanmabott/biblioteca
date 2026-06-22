@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "types": ["vitest/globals", "@testing-library/jest-dom"],
+    "verbatimModuleSyntax": false
+  },
+  "include": ["src", ".storybook"]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "biblioteca",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sistema de gestión de biblioteca — monorepo con arquitectura limpia y TDD",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "test:domain": "pnpm --filter @biblioteca/domain test",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  },
+  "packageManager": "pnpm@9.7.0",
+  "engines": {
+    "node": ">=20"
+  }
+}
