@@ -1,8 +1,12 @@
 # Biblioteca
 
-Sistema de gestión de biblioteca. Monorepo NodeJS + TypeScript desarrollado con
-**arquitectura limpia** y **TDD**, en tres etapas: dominio + backend, frontend, y
-docker-compose.
+Sistema de gestión de biblioteca — préstamos, catálogo y roles. Monorepo **NodeJS + TypeScript**
+desarrollado con **arquitectura limpia** y **TDD**, en tres etapas: dominio + backend, frontend,
+y orquestación con docker-compose.
+
+<!-- Cuando tengas el workflow de CI, descomentá esta línea:
+![CI](https://github.com/Juanmabott/biblioteca/actions/workflows/ci.yml/badge.svg)
+-->
 
 ## Estructura
 
@@ -15,20 +19,32 @@ biblioteca/
 │       └── services/    # Puertos (interfaces): repositorios, hasher, clock, ...
 └── apps/
     ├── backend/         # Express. Adapta los casos de uso del dominio a una API REST.
-    └── frontend/        # (Etapa 2) Vite + React + Storybook.
+    └── frontend/        # Vite + React + Storybook.
 ```
 
 La regla de dependencias apunta hacia adentro: `apps/*` dependen de `domain`; `domain`
 no depende de nadie. Los detalles (HTTP, base de datos, UI) viven en los bordes e
 implementan los puertos que el dominio define.
 
+## Decisiones de diseño
+
+- **Dominio puro:** las reglas de negocio (quién puede prestar, cuándo se puede devolver,
+  roles) viven en `domain/` y se testean sin levantar servidor ni base de datos.
+- **Puertos e inyección de dependencias:** el dominio define interfaces (`repositorios`,
+  `hasher`, `clock`) y cada app inyecta su implementación. Esto permite el swap
+  transparente entre PostgreSQL y repos en memoria.
+- **TDD en el dominio, Visual TDD en el frontend:** los casos de uso nacieron test-first
+  con Vitest; los componentes presentacionales nacieron story-first en Storybook con sus
+  tests de Testing Library.
+
 ## Stack
 
 - TypeScript en todo el monorepo
 - pnpm workspaces
-- Vitest (tests del dominio)
+- Vitest (tests del dominio) + Supertest (integración) + Testing Library (componentes)
 - Express (backend)
-- Vite + React + Storybook (frontend, etapa 2)
+- Vite + React + Storybook (frontend)
+- Docker Compose (PostgreSQL + backend + frontend con Nginx)
 
 ## Comandos
 
@@ -46,9 +62,9 @@ pnpm --filter @biblioteca/backend dev     # levanta la API en http://localhost:3
 pnpm --filter @biblioteca/backend test    # tests de integración (supertest)
 ```
 
-Al arrancar se crea un bibliotecario seed (`admin@biblioteca.test` / `admin12345`).
-Ver `apps/backend/requests.http` para probar los endpoints, y `apps/backend/.env.example`
-para la configuración.
+Al arrancar se crea un bibliotecario seed (`admin@biblioteca.test` / `admin12345`, solo
+para desarrollo). Ver `apps/backend/requests.http` para probar los endpoints, y
+`apps/backend/.env.example` para la configuración.
 
 #### Endpoints
 
@@ -77,7 +93,7 @@ Construido con **Visual TDD**: cada componente presentacional (`LibroCard`, `Log
 comunicación HTTP con el backend y `src/auth` maneja el JWT. En desarrollo, Vite proxea
 `/api` hacia el backend (`http://localhost:3000`).
 
-## Docker (etapa 3)
+## Docker
 
 Levanta base de datos + backend + frontend con un solo comando:
 
@@ -90,18 +106,16 @@ docker compose up --build
 - API directa: http://localhost:3000
 - Base de datos: PostgreSQL (servicio `db`, datos en el volumen `db-data`)
 
-El backend elige automáticamente PostgreSQL cuando hay `DATABASE_URL` (en `docker-compose`)
-y repos en memoria en caso contrario. Ver `docs/REFLEXION-etapa3-hosting.md` para HTTPS,
-secretos y reverse proxy.
+El backend elige automáticamente PostgreSQL cuando hay `DATABASE_URL` (como en
+`docker-compose`) y repos en memoria en caso contrario. Ver
+`docs/REFLEXION-etapa3-hosting.md` para HTTPS, secretos y reverse proxy.
 
-## Estado
+## Documentación
 
-- [x] Esqueleto del monorepo
-- [x] Dominio (TDD)
-- [x] Backend (Express + JWT)
-- [x] Reflexión etapa 1 (`docs/REFLEXION-etapa1.md`)
-- [x] Frontend (Vite + React + Storybook, Visual TDD)
-- [x] docker-compose (Postgres + backend + frontend) y reflexión de hosting
+- `docs/REFLEXION-etapa1.md` — decisiones de dominio y arquitectura
+- `docs/REFLEXION-etapa3-hosting.md` — HTTPS, manejo de secretos y reverse proxy
 
-> Nota: las suites de tests están escritas pero pendientes de ejecutar en verde
-> (`pnpm install && pnpm -r test`).
+## Próximos pasos
+
+- [ ] CI con GitHub Actions (`pnpm -r test` + `pnpm typecheck` en cada push)
+- [ ] Deploy de demo pública
