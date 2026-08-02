@@ -4,10 +4,6 @@ Sistema de gestión de biblioteca — préstamos, catálogo y roles. Monorepo **
 desarrollado con **arquitectura limpia** y **TDD**, en tres etapas: dominio + backend, frontend,
 y orquestación con docker-compose.
 
-<!-- Cuando tengas el workflow de CI, descomentá esta línea:
-![CI](https://github.com/Juanmabott/biblioteca/actions/workflows/ci.yml/badge.svg)
--->
-
 ## Estructura
 
 ```
@@ -73,7 +69,7 @@ para desarrollo). Ver `apps/backend/requests.http` para probar los endpoints, y
 | GET  | `/health` | — | Estado del servicio |
 | POST | `/auth/register` | — | Registrar un socio |
 | POST | `/auth/login` | — | Login, devuelve JWT |
-| GET  | `/libros` | JWT | Listar catálogo |
+| GET  | `/libros` | — | Listar catálogo (público, modo invitado) |
 | POST | `/libros` | JWT (bibliotecario) | Crear libro |
 | PUT  | `/libros/:id` | JWT (bibliotecario) | Editar libro |
 | DELETE | `/libros/:id` | JWT (bibliotecario) | Eliminar libro |
@@ -92,6 +88,9 @@ Construido con **Visual TDD**: cada componente presentacional (`LibroCard`, `Log
 `CatalogoList`) tiene sus *stories* en Storybook y sus tests. La capa `src/api` aísla la
 comunicación HTTP con el backend y `src/auth` maneja el JWT. En desarrollo, Vite proxea
 `/api` hacia el backend (`http://localhost:3000`).
+
+La página de login está centrada, con navbar, e incluye un **modo invitado** para
+explorar el catálogo en solo lectura sin registrarse.
 
 ## Docker
 
@@ -114,8 +113,3 @@ El backend elige automáticamente PostgreSQL cuando hay `DATABASE_URL` (como en
 
 - `docs/REFLEXION-etapa1.md` — decisiones de dominio y arquitectura
 - `docs/REFLEXION-etapa3-hosting.md` — HTTPS, manejo de secretos y reverse proxy
-
-## Próximos pasos
-
-- [ ] CI con GitHub Actions (`pnpm -r test` + `pnpm typecheck` en cada push)
-- [ ] Deploy de demo pública
