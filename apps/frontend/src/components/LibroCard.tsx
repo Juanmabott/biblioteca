@@ -17,14 +17,7 @@ export function LibroCard({ libro, onPrestar, onEliminar }: LibroCardProps) {
   const disponible = libro.copiasDisponibles > 0;
 
   return (
-    <article
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: 8,
-        padding: 16,
-        maxWidth: 320,
-      }}
-    >
+    <article className="libro-card">
       <h3 style={{ margin: "0 0 4px" }}>{libro.titulo}</h3>
       <p style={{ margin: "0 0 8px", color: "#555" }}>{libro.autor}</p>
       <p style={{ margin: "0 0 12px", fontSize: 14 }}>

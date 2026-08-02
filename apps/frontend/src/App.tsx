@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "./auth/AuthContext.js";
 import { LoginForm } from "./components/LoginForm.js";
+import { Navbar } from "./components/Navbar.js";
 import { CatalogoList } from "./components/CatalogoList.js";
 import { CrearLibroForm } from "./components/CrearLibroForm.js";
 import { MisPrestamos } from "./components/MisPrestamos.js";
@@ -9,6 +10,7 @@ import type { CrearLibroPayload } from "./api/client.js";
 
 export function App() {
   const { usuario, api, login, logout, esBibliotecario } = useAuth();
+  const [modoInvitado, setModoInvitado] = useState(false);
   const [libros, setLibros] = useState<LibroDTO[]>([]);
   const [prestamos, setPrestamos] = useState<PrestamoDTO[]>([]);
   const [error, setError] = useState<string | undefined>();
@@ -35,14 +37,17 @@ export function App() {
     if (usuario) {
       void cargarCatalogo();
       void cargarPrestamos();
+    } else if (modoInvitado) {
+      void cargarCatalogo();
     }
-  }, [usuario, cargarCatalogo, cargarPrestamos]);
+  }, [usuario, modoInvitado, cargarCatalogo, cargarPrestamos]);
 
   async function handleLogin(email: string, password: string) {
     setError(undefined);
     setCargando(true);
     try {
       await login(email, password);
+      setModoInvitado(false);
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "No se pudo iniciar sesión.");
     } finally {
@@ -90,43 +95,89 @@ export function App() {
     }
   }
 
-  if (!usuario) {
+  // --- Vista de login (sin sesión ni modo invitado) ---
+  if (!usuario && !modoInvitado) {
     return (
-      <main style={{ fontFamily: "system-ui", padding: 24 }}>
-        <h1>Biblioteca</h1>
-        <LoginForm onSubmit={handleLogin} error={error} cargando={cargando} />
-      </main>
+      <>
+        <Navbar />
+        <main className="login-page">
+          <div className="login-card">
+            <h1>Bienvenido</h1>
+            <p className="login-subtitulo">
+              Ingresá con tu cuenta para gestionar préstamos.
+            </p>
+            <LoginForm onSubmit={handleLogin} error={error} cargando={cargando} />
+            <div className="login-separador">
+              <span>o</span>
+            </div>
+            <button
+              type="button"
+              className="boton-invitado"
+              onClick={() => {
+                setError(undefined);
+                setModoInvitado(true);
+              }}
+            >
+              Explorar el catálogo como invitado
+            </button>
+          </div>
+        </main>
+      </>
     );
   }
 
+  // --- Vista de invitado (catálogo solo lectura) ---
+  if (!usuario) {
+    return (
+      <>
+        <Navbar
+          invitado
+          onIrALogin={() => {
+            setError(undefined);
+            setModoInvitado(false);
+          }}
+        />
+        <main className="contenido">
+          <header className="contenido-header">
+            <h1>Catálogo</h1>
+            <p className="contenido-subtitulo">
+              Estás navegando como invitado. Iniciá sesión para pedir libros
+              prestados.
+            </p>
+          </header>
+          {error && <p role="alert">{error}</p>}
+          <CatalogoList libros={libros} />
+        </main>
+      </>
+    );
+  }
+
+  // --- Vista autenticada ---
   return (
-    <main style={{ fontFamily: "system-ui", padding: 24 }}>
-      <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1>Catálogo</h1>
-        <div>
-          <span style={{ marginRight: 12 }}>
-            {usuario.nombre} ({usuario.rol})
-          </span>
-          <button type="button" onClick={logout}>Salir</button>
-        </div>
-      </header>
-      {error && <p role="alert" style={{ color: "crimson" }}>{error}</p>}
-      {esBibliotecario && (
-        <section style={{ marginBottom: 24 }}>
-          <CrearLibroForm onSubmit={handleCrear} />
-        </section>
-      )}
-      <CatalogoList
-        libros={libros}
-        onPrestar={esBibliotecario ? undefined : handlePrestar}
-        onEliminar={esBibliotecario ? handleEliminar : undefined}
-      />
-      {!esBibliotecario && (
-        <section style={{ marginTop: 32 }}>
-          <h2>Mis préstamos</h2>
-          <MisPrestamos prestamos={prestamos} onDevolver={handleDevolver} />
-        </section>
-      )}
-    </main>
+    <>
+      <Navbar usuario={usuario} onSalir={logout} />
+      <main className="contenido">
+        <header className="contenido-header">
+          <h1>Catálogo</h1>
+        </header>
+        {error && <p role="alert">{error}</p>}
+        {esBibliotecario && (
+          <section className="panel">
+            <CrearLibroForm onSubmit={handleCrear} />
+          </section>
+        )}
+        <CatalogoList
+          libros={libros}
+          onPrestar={esBibliotecario ? undefined : handlePrestar}
+          onEliminar={esBibliotecario ? handleEliminar : undefined}
+        />
+        {!esBibliotecario && (
+          <section className="panel seccion-prestamos">
+            <h2>Mis préstamos</h2>
+            <MisPrestamos prestamos={prestamos} onDevolver={handleDevolver} />
+          </section>
+        )}
+      </main>
+    </>
   );
 }

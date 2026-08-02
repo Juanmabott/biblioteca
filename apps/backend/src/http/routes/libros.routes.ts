@@ -8,9 +8,8 @@ import { libroDTO } from "../presenters.js";
 export function librosRoutes(c: Container, auth: ReturnType<typeof autenticar>): Router {
   const router = Router();
 
-  // Todas las rutas del catálogo requieren estar autenticado.
-  router.use(auth);
-
+  // El catálogo es de lectura pública (modo invitado); las mutaciones
+  // requieren autenticación y permiso de gestión.
   router.get(
     "/",
     asyncHandler(async (_req, res) => {
@@ -21,6 +20,7 @@ export function librosRoutes(c: Container, auth: ReturnType<typeof autenticar>):
 
   router.post(
     "/",
+    auth,
     requierePermiso(Permiso.GESTIONAR_LIBROS),
     asyncHandler(async (req, res) => {
       const { titulo, autor, isbn, copiasTotales } = req.body ?? {};
@@ -37,6 +37,7 @@ export function librosRoutes(c: Container, auth: ReturnType<typeof autenticar>):
 
   router.put(
     "/:id",
+    auth,
     requierePermiso(Permiso.GESTIONAR_LIBROS),
     asyncHandler(async (req, res) => {
       const { titulo, autor, isbn, copiasTotales } = req.body ?? {};
@@ -54,6 +55,7 @@ export function librosRoutes(c: Container, auth: ReturnType<typeof autenticar>):
 
   router.delete(
     "/:id",
+    auth,
     requierePermiso(Permiso.GESTIONAR_LIBROS),
     asyncHandler(async (req, res) => {
       await c.eliminarLibro.ejecutar({

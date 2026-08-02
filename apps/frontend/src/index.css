@@ -34,8 +34,180 @@ body {
 }
 
 main {
-  max-width: 960px;
+  max-width: 1080px;
   margin: 0 auto;
+}
+
+/* --- Navbar --- */
+
+.navbar {
+  background: var(--color-superficie);
+  border-bottom: 1px solid var(--color-borde);
+  box-shadow: var(--sombra);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.navbar-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.navbar-logo {
+  font-size: 1.4rem;
+}
+
+.navbar-session {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.navbar-user {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.25;
+}
+
+.navbar-rol {
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: var(--color-texto-suave);
+  text-transform: lowercase;
+}
+
+/* --- Página de login centrada --- */
+
+.login-page {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 12px;
+  box-shadow: var(--sombra);
+  padding: 32px;
+  text-align: center;
+}
+
+.login-card h1 {
+  margin: 0 0 4px;
+}
+
+.login-subtitulo {
+  margin: 0 0 24px;
+  color: var(--color-texto-suave);
+  font-size: 0.95rem;
+}
+
+.login-form {
+  text-align: left;
+}
+
+.login-separador {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: var(--color-texto-suave);
+  font-size: 0.85rem;
+}
+
+.login-separador::before,
+.login-separador::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-borde);
+}
+
+.boton-invitado {
+  width: 100%;
+}
+
+/* --- Layout del contenido --- */
+
+.contenido {
+  padding: 24px;
+}
+
+.contenido-header {
+  margin-bottom: 8px;
+}
+
+.contenido-header h1 {
+  margin-bottom: 4px;
+}
+
+.contenido-subtitulo {
+  margin: 0 0 16px;
+  color: var(--color-texto-suave);
+}
+
+.panel {
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 12px;
+  box-shadow: var(--sombra);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+
+.seccion-prestamos {
+  margin-top: 32px;
+}
+
+.seccion-prestamos h2 {
+  margin-top: 0;
+}
+
+/* --- Grilla del catálogo --- */
+
+.catalogo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.libro-card {
+  border: 1px solid var(--color-borde);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.libro-card h3 {
+  margin: 0 0 4px;
+}
+
+.libro-card > div:last-child {
+  margin-top: auto;
 }
 
 h1 {

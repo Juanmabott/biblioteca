@@ -18,7 +18,7 @@ export function LoginForm({ onSubmit, error, cargando = false }: LoginFormProps)
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: "grid", gap: 8, maxWidth: 280 }}>
+    <form onSubmit={handleSubmit} className="login-form" style={{ display: "grid", gap: 12 }}>
       <label>
         Email
         <input
@@ -37,7 +37,7 @@ export function LoginForm({ onSubmit, error, cargando = false }: LoginFormProps)
           required
         />
       </label>
-      {error && <p role="alert" style={{ color: "crimson" }}>{error}</p>}
+      {error && <p role="alert">{error}</p>}
       <button type="submit" disabled={cargando}>
         {cargando ? "Ingresando…" : "Ingresar"}
       </button>

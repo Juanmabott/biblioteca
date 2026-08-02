@@ -13,7 +13,7 @@ export function CatalogoList({ libros, onPrestar, onEliminar }: CatalogoListProp
     return <p>No hay libros en el catálogo.</p>;
   }
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+    <div className="catalogo-grid">
       {libros.map((libro) => (
         <LibroCard
           key={libro.id}

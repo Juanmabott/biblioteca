@@ -44,8 +44,16 @@ describe("API de biblioteca", () => {
     expect(res.body.status).toBe("ok");
   });
 
-  it("rechaza el acceso al catálogo sin token", async () => {
+  it("permite ver el catálogo sin token (modo invitado)", async () => {
     const res = await request(app).get("/libros");
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+  });
+
+  it("rechaza crear libros sin token", async () => {
+    const res = await request(app)
+      .post("/libros")
+      .send({ titulo: "X", autor: "Y", isbn: "isbn-x", copiasTotales: 1 });
     expect(res.status).toBe(401);
   });
 
